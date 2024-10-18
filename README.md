@@ -2,6 +2,8 @@
 These instructions will work on any Debian based OS including Ubuntu, RaspberryPi, WSL2 etc...  
 (For non-Debian distros, commands for installation need to be tweaked)  
 
+- Don't forget to allow port 1883 & 1884 in your firewall Settings
+
 _By default the config allows only to use local connections for security reasons but since authentication is enabled below, that's not the case._
 
 ## 1. Install docker
