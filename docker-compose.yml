@@ -4,15 +4,24 @@ services:
     image: eclipse-mosquitto
     container_name: mqtt5
     ports:
-      - "1883:1883" #default mqtt port
-      - "1884:1884" #default mqtt port for websockets
+      - "1883:1883"  # default mqtt port
+      - "1884:1884"  # websockets port
     volumes:
       - ./config:/mosquitto/config:rw
       - ./data:/mosquitto/data:rw
       - ./log:/mosquitto/log:rw
     restart: unless-stopped
+  ngrok:
+    image: ngrok/ngrok:latest
+    command:
+      - "http"
+      - "http://mqtt5:1884"  # Use container name instead of localhost
+    environment:
+      NGROK_AUTHTOKEN: 1xWCDLy4naqmBLuhg6AJYrCyKdb_7Rik3p5JMpbwYCaM18BVH
+    ports:
+      - 80:4040  # Expose ngrok web interface
 
-# volumes for mapping data,config and log
+# Volumes for mapping data, config, and log
 volumes:
   config:
   data:
