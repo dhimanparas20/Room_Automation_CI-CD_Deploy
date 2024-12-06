@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   # mqtt5 eclipse-mosquitto
   mqtt5:
@@ -6,7 +5,7 @@ services:
     container_name: mqtt5
     ports:
       - "1883:1883" #default mqtt port
-      - "9001:9001" #default mqtt port for websockets
+      - "1884:1884" #default mqtt port for websockets
     volumes:
       - ./config:/mosquitto/config:rw
       - ./data:/mosquitto/data:rw
