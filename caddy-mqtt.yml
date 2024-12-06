@@ -1,32 +1,46 @@
+version: "3.7"
 services:
-  # mqtt5 eclipse-mosquitto
+  # mqtt5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
   mqtt5:
     image: eclipse-mosquitto
     container_name: mqtt5
     ports:
-      - "1883:1883" #default mqtt port
-      - "1884:1884" #default mqtt port for websockets
+      - "1883:1883"  # Default MQTT port
+      - "1884:1884"  # WebSocket port for MQTT (WS)
     volumes:
       - ./config:/mosquitto/config:rw
       - ./data:/mosquitto/data:rw
       - ./log:/mosquitto/log:rw
     restart: unless-stopped
+    networks:
+      - caddy-mqtt
 
-  # caddy for HTTPS and reverse-proxy
+  # mqttx-web UI for the MQTT broker (this is the web interface)
+  mqttx-web:
+    image: emqx/mqttx-web
+    container_name: mqttx-web
+    ports:
+      - "5500:80"  # HTTP access to MQTTX web interface
+    networks:
+      - caddy-mqtt
+
+  # Caddy server for reverse proxying and HTTPS
   caddy:
     image: caddy:latest
     container_name: caddy
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "80:80"   # HTTP
+      - "443:443" # HTTPS
+      - "443:443/udp" 
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy_data:/data
       - ./caddy_config:/config
+    networks:
+      - caddy-mqtt
 
-# volumes for mapping data,config and log
+# Volumes for data, config, and logs
 volumes:
   config:
   data:
@@ -34,6 +48,7 @@ volumes:
   caddy_data:
   caddy_config:
 
+# Networks for communication between services
 networks:
-  default:
-    name: caddy-mqtt
+  caddy-mqtt:
+    driver: bridge
