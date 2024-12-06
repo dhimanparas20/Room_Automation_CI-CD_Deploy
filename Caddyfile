@@ -1,3 +1,24 @@
-mstservices.tech {
-        reverse_proxy http://mqtt5:1884
+# Redirect HTTP (port 80) to HTTPS (port 443)
+mstservices.tech:80 {
+    redir https://{host}{uri} permanent
+}
+
+# Default HTTPS configuration for mstservices.tech (website)
+mstservices.tech:443 {
+    reverse_proxy mqttx-web:80
+}
+
+# WSS configuration for mqtt.mstservices.tech (WebSocket)
+mqtt.mstservices.tech {
+    reverse_proxy http://mqtt5:1884
+}
+
+# WS connection on port 1884
+mstservices.tech:1884 {
+    reverse_proxy mqtt5:1884
+}
+
+# MQTT TCP connection on port 1883
+mstservices.tech:1883 {
+    reverse_proxy mqtt5:1883
 }
