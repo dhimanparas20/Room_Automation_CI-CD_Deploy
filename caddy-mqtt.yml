@@ -5,7 +5,7 @@ services:
     container_name: mqtt5
     ports:
       - "1883:1883"  # Default MQTT port
-      - "1884:1884"  # WebSocket port for MQTT
+      - "1884:1884"  # WebSocket port for MQTT (WS)
     volumes:
       - ./config:/mosquitto/config:rw
       - ./data:/mosquitto/data:rw
@@ -18,8 +18,8 @@ services:
   mqttx-web:
     image: emqx/mqttx-web
     container_name: mqttx-web
-    ports:
-      - "5500:80"  # HTTP access to MQTTX web interface
+#    ports:
+#      - "5500:80"  # HTTP access to MQTTX web interface
     networks:
       - caddy-mqtt
 
@@ -28,10 +28,17 @@ services:
     image: caddy:latest
     container_name: caddy
     restart: unless-stopped
+    environment:
+      - WEB_DOMAIN=mstservices.tech
+      - MQTT_DOMAIN=mqtt.mstservices.tech
+      - WEBSOCKET_PORT=1884
+      - MQTT_PORT=1883
+      - WEB_CONTAINER=mqttx-web
+      - MQTT_CONTAINER=mqtt5
     ports:
       - "80:80"   # HTTP
       - "443:443" # HTTPS
-      - "443:443/udp" 
+      - "443:443/udp" # UDP over HTTPS
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy_data:/data
