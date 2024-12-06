@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   # mqtt5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
   mqtt5:
@@ -6,7 +5,7 @@ services:
     container_name: mqtt5
     ports:
       - "1883:1883"  # Default MQTT port
-      - "1884:1884"  # WebSocket port for MQTT (WS)
+      - "1884:1884"  # WebSocket port for MQTT
     volumes:
       - ./config:/mosquitto/config:rw
       - ./data:/mosquitto/data:rw
