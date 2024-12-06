@@ -17,7 +17,7 @@ services:
       - "http"
       - "http://mqtt5:1884"  # Use container name instead of localhost
     environment:
-      NGROK_AUTHTOKEN: 1xWCDLy4naqmBLuhg6AJYrCyKdb_7Rik3p5JMpbwYCaM18BVH
+      NGROK_AUTHTOKEN: "${NGROK_AUTHTOKEN}"  # Read from .env or env variable
     ports:
       - 80:4040  # Expose ngrok web interface
 
