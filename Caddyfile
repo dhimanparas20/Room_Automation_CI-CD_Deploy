@@ -1,0 +1,24 @@
+# Redirect HTTP (port 80) to HTTPS (port 443)
+{$WEB_DOMAIN}:80 {
+    redir https://{host}{uri} permanent
+}
+
+# Default HTTPS configuration for mstservices.tech (website)
+{$WEB_DOMAIN}:443 {
+    reverse_proxy {$WEB_CONTAINER}:80
+}
+
+# WSS configuration for mqtt.mstservices.tech (WebSocket)
+{$MQTT_DOMAIN} {
+    reverse_proxy {$MQTT_CONTAINER}:{$WEBSOCKET_PORT}
+}
+
+# MQTT connection on port 1884 for mqtt.mstservices.tech only
+{$MQTT_DOMAIN}:1884 {
+    reverse_proxy {$MQTT_CONTAINER}:{$WEBSOCKET_PORT}
+}
+
+# MQTT connection on port 1883 for mqtt.mstservices.tech only
+{$MQTT_DOMAIN}:1883 {
+    reverse_proxy {$MQTT_CONTAINER}:{$MQTT_PORT}
+}
