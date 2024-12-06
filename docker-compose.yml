@@ -11,14 +11,13 @@ services:
       - ./data:/mosquitto/data:rw
       - ./log:/mosquitto/log:rw
     restart: unless-stopped
-
   ngrok:
     image: ngrok/ngrok:latest
     command:
       - "http"
       - "http://mqtt5:1884"  # Use container name instead of localhost
     environment:
-      NGROK_AUTHTOKEN: "${NGROK_AUTHTOKEN}"  # Read from .env or env variable
+      NGROK_AUTHTOKEN: 1xWCDLy4naqmBLuhg6AJYrCyKdb_7Rik3p5JMpbwYCaM18BVH
     ports:
       - 80:4040  # Expose ngrok web interface
 
