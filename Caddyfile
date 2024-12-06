@@ -13,12 +13,12 @@ mqtt.mstservices.tech {
     reverse_proxy http://mqtt5:1884
 }
 
-# WS connection on port 1884
-mstservices.tech:1884 {
-    reverse_proxy mqtt5:1884
+# MQTT connection on port 1883 for mqtt.mstservices.tech only
+mqtt.mstservices.tech:1883 {
+    reverse_proxy mqtt5:1883
 }
 
-# MQTT TCP connection on port 1883
-mstservices.tech:1883 {
-    reverse_proxy mqtt5:1883
+# MQTT connection on port 1884 for mqtt.mstservices.tech only
+mqtt.mstservices.tech:1884 {
+    reverse_proxy mqtt5:1884
 }
