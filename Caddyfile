@@ -3,22 +3,27 @@
     redir https://{host}{uri} permanent
 }
 
-# Default HTTPS configuration for mstservices.tech (website)
-{$WEB_DOMAIN}:443 {
-    reverse_proxy {$WEB_CONTAINER}:80
+# Portainer on HTTPS (secured connection)
+portainer.{$WEB_DOMAIN} {
+    reverse_proxy portainer:9000
 }
 
-# WSS configuration for mqtt.mstservices.tech (WebSocket)
+# Default HTTPS configuration for mqttx-web
+{$WEB_DOMAIN} {
+    reverse_proxy mqttx-web:80
+}
+
+# WSS configuration for mqtt.mstservices.tech (WebSocket Secure)
 {$MQTT_DOMAIN} {
     reverse_proxy {$MQTT_CONTAINER}:{$WEBSOCKET_PORT}
 }
 
-# MQTT connection on port 1884 for mqtt.mstservices.tech only
+# WS connection on port 1884 for mqtt.mstservices.tech
 {$MQTT_DOMAIN}:1884 {
     reverse_proxy {$MQTT_CONTAINER}:{$WEBSOCKET_PORT}
 }
 
-# MQTT connection on port 1883 for mqtt.mstservices.tech only
+# MQTT connection on port 1883 for mqtt.mstservices.tech
 {$MQTT_DOMAIN}:1883 {
     reverse_proxy {$MQTT_CONTAINER}:{$MQTT_PORT}
 }
