@@ -1,3 +1,18 @@
+# Networks for communication between services
+networks:
+  caddy-mqtt:
+    driver: bridge
+
+# Volumes for data, config, and logs
+volumes:
+  config:
+  data:
+  log:
+  caddy_data:
+  caddy_config:
+  portainer_data:
+    driver: local
+
 services:
   # mqtt5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
   mqtt5:
@@ -18,10 +33,25 @@ services:
   mqttx-web:
     image: emqx/mqttx-web
     container_name: mqttx-web
+    restart: unless-stopped
     ports:
-      - "5500:80"  # HTTP access to MQTTX web interface
+      - "5500:80"  # Caddy container will route this internally
     networks:
       - caddy-mqtt
+
+  # Portainer container for Docker management UI
+  portainer:
+    image: portainer/portainer-ce:2.21.4
+    container_name: portainer
+    restart: always
+    ports:
+      - "8000:8000" # Port for Edge Agent communication
+      - "9443:9443" # Port for secure web UI
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Access to Docker engine
+      - portainer_data:/data # Persistent data storage
+    networks:
+      - caddy-mqtt  
 
   # Caddy server for reverse proxying and HTTPS
   caddy:
@@ -36,42 +66,12 @@ services:
       - WEB_CONTAINER=mqttx-web
       - MQTT_CONTAINER=mqtt5
     ports:
-      - "80:80"   # HTTP
-      - "443:443" # HTTPS
+      - "80:80"       # HTTP
+      - "443:443"     # HTTPS
       - "443:443/udp" # UDP over HTTPS
-      - "5000:5500" # HTTPS
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy_data:/data
       - ./caddy_config:/config
     networks:
       - caddy-mqtt
-
-  #Portrainer
-  portainer:
-    image: portainer/portainer-ce:2.21.4
-    container_name: portainer
-    restart: always
-    ports:
-      - "8000:8000" # Port for Edge Agent communication
-      - "9443:9443" # Port for secure web UI
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # Access to Docker engine
-      - portainer_data:/data # Persistent data storage
-    networks:
-      - caddy-mqtt
-
-# Volumes for data, config, and logs
-volumes:
-  config:
-  data:
-  log:
-  caddy_data:
-  caddy_config:
-  portainer_data:
-    driver: local
-
-# Networks for communication between services
-networks:
-  caddy-mqtt:
-    driver: bridge
