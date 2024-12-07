@@ -1,0 +1,77 @@
+services:
+  # mqtt5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
+  mqtt5:
+    image: eclipse-mosquitto
+    container_name: mqtt5
+    ports:
+      - "1883:1883"  # Default MQTT port
+      - "1884:1884"  # WebSocket port for MQTT (WS)
+    volumes:
+      - ./config:/mosquitto/config:rw
+      - ./data:/mosquitto/data:rw
+      - ./log:/mosquitto/log:rw
+    restart: unless-stopped
+    networks:
+      - caddy-mqtt
+
+  # mqttx-web UI for the MQTT broker (this is the web interface)
+  mqttx-web:
+    image: emqx/mqttx-web
+    container_name: mqttx-web
+    ports:
+      - "5500:80"  # HTTP access to MQTTX web interface
+    networks:
+      - caddy-mqtt
+
+  # Caddy server for reverse proxying and HTTPS
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    environment:
+      - WEB_DOMAIN=mstservices.tech
+      - MQTT_DOMAIN=mqtt.mstservices.tech
+      - WEBSOCKET_PORT=1884
+      - MQTT_PORT=1883
+      - WEB_CONTAINER=mqttx-web
+      - MQTT_CONTAINER=mqtt5
+    ports:
+      - "80:80"   # HTTP
+      - "443:443" # HTTPS
+      - "443:443/udp" # UDP over HTTPS
+      - "5000:5500" # HTTPS
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy_data:/data
+      - ./caddy_config:/config
+    networks:
+      - caddy-mqtt
+
+  #Portrainer
+  portainer:
+    image: portainer/portainer-ce:2.21.4
+    container_name: portainer
+    restart: always
+    ports:
+      - "8000:8000" # Port for Edge Agent communication
+      - "9443:9443" # Port for secure web UI
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Access to Docker engine
+      - portainer_data:/data # Persistent data storage
+    networks:
+      - caddy-mqtt
+
+# Volumes for data, config, and logs
+volumes:
+  config:
+  data:
+  log:
+  caddy_data:
+  caddy_config:
+  portainer_data:
+    driver: local
+
+# Networks for communication between services
+networks:
+  caddy-mqtt:
+    driver: bridge
