@@ -35,9 +35,10 @@ services:
     container_name: mqttx-web
     restart: unless-stopped
     ports:
-      - "5500:80"  # Caddy container will route this internally
+      - "5500:8080"  # Caddy container will route this internally
     networks:
       - caddy-mqtt
+    command: "http-server -p 8080"  # Explicitly start http-server on port 8080
 
   # Portainer container for Docker management UI
   portainer:
@@ -59,19 +60,18 @@ services:
     container_name: caddy
     restart: unless-stopped
     environment:
-      - WEB_DOMAIN=mstservices.tech
-      - MQTT_DOMAIN=mqtt.mstservices.tech
-      - WEBSOCKET_PORT=1884
-      - MQTT_PORT=1883
-      - WEB_CONTAINER=mqttx-web
-      - MQTT_CONTAINER=mqtt5
+      - WEB_DOMAIN=${WEB_DOMAIN}
+      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
+      - MQTT_PORT=${MQTT_PORT}
+      - WEB_CONTAINER=${WEB_CONTAINER}
+      - MQTT_CONTAINER=${MQTT_CONTAINER}
     ports:
-      - "80:80"       # HTTP
+      - "80:80"       # HTTP (will be redirected to HTTPS)
       - "443:443"     # HTTPS
-      - "443:443/udp" # UDP over HTTPS
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy_data:/data
       - ./caddy_config:/config
+      - ./public:/srv  # Mount the public directory here
     networks:
       - caddy-mqtt
