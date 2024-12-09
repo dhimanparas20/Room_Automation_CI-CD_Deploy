@@ -3,27 +3,33 @@
     redir https://{host}{uri} permanent
 }
 
+# Serve static files (index.html, styles.css, script.js) on port 5000
+{$WEB_DOMAIN} {
+    root * /srv
+    file_server
+}
+
 # Portainer on HTTPS (secured connection)
 portainer.{$WEB_DOMAIN} {
     reverse_proxy portainer:9000
 }
 
 # Default HTTPS configuration for mqttx-web
-{$WEB_DOMAIN} {
-    reverse_proxy mqttx-web:80
+mqttx.{$WEB_DOMAIN} {
+    reverse_proxy {$WEB_CONTAINER}:8080
 }
 
 # WSS configuration for mqtt.mstservices.tech (WebSocket Secure)
-{$MQTT_DOMAIN} {
+mqtt.{$WEB_DOMAIN} {
     reverse_proxy {$MQTT_CONTAINER}:{$WEBSOCKET_PORT}
 }
 
 # WS connection on port 1884 for mqtt.mstservices.tech
-{$MQTT_DOMAIN}:1884 {
+mqtt.{$WEB_DOMAIN}:{$WEBSOCKET_PORT} {
     reverse_proxy {$MQTT_CONTAINER}:{$WEBSOCKET_PORT}
 }
 
 # MQTT connection on port 1883 for mqtt.mstservices.tech
-{$MQTT_DOMAIN}:1883 {
+mqtt.{$WEB_DOMAIN}:{$MQTT_PORT} {
     reverse_proxy {$MQTT_CONTAINER}:{$MQTT_PORT}
 }
