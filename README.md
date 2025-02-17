@@ -75,20 +75,27 @@ HOST=0.0.0.0
 
 Fill in the required values before proceeding.
 
-### **6. Build and Start Docker Containers**
+### **6. Create Docker Containers**
 ```sh
-sudo docker compose up --build -d
+sudo docker compose create
 ```
 
-### **7. Set MQTT Credentials**
-Start an interactive shell inside the MQTT container:
+### **7. Start MQTT and Configure Credentials**
+Start the `mqtt5` container:
+```sh
+sudo docker start mqtt5
+```
+
+Then, access the container's shell:
 ```sh
 sudo docker exec -it mqtt5 sh
 ```
+
 Once inside the container, run:
 ```sh
 mosquitto_passwd -c /mosquitto/config/pwfile <username>
 ```
+
 You will be prompted to enter and confirm the password. Once done, type:
 ```sh
 exit
