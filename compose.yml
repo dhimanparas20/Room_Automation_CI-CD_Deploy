@@ -1,3 +1,5 @@
+version: '3.8'
+
 # Networks for communication between services
 networks:
   caddy:
@@ -28,20 +30,6 @@ services:
     networks:
       - caddy
 
-  # Room Automation Scheduler Service
-  scheduler:
-    container_name: room_automation_scheduler
-    build:
-      context: ./Room_Automation_Scheduler
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    env_file:
-      - .env
-    ports:
-      - "8000:8000"
-    networks:
-      - caddy
-
   # Caddy server for reverse proxying and HTTPS
   caddy:
     image: caddy:latest
@@ -60,8 +48,27 @@ services:
     networks:
       - caddy
     depends_on:
-      - mqtt5
-      - scheduler
+      mqtt5:
+        condition: service_started
+
+  # Room Automation Scheduler Service
+  scheduler:
+    container_name: room_automation_scheduler
+    build:
+      context: ./Room_Automation_Scheduler
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    networks:
+      - caddy
+    depends_on:
+      mqtt5:
+        condition: service_started
+      caddy:
+        condition: service_started
 
   # Telegram Bot Service
   tg-bot:
@@ -75,4 +82,7 @@ services:
     networks:
       - caddy
     depends_on:
-      - caddy
+      mqtt5:
+        condition: service_started
+      caddy:
+        condition: service_started
