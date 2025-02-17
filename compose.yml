@@ -1,3 +1,5 @@
+version: '3.8'
+
 # Networks for communication between services
 networks:
   caddy:
@@ -13,7 +15,7 @@ volumes:
     driver: local
 
 services:
-  # mqtt5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
+  # MQTT5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
   mqtt5:
     image: eclipse-mosquitto
     container_name: mqtt5
@@ -25,6 +27,20 @@ services:
       - ./data:/mosquitto/data:rw
       - ./log:/mosquitto/log:rw
     restart: unless-stopped
+    networks:
+      - caddy
+
+  # Room Automation Scheduler Service
+  scheduler:
+    container_name: room_automation_scheduler
+    build:
+      context: ./Room_Automation_Scheduler
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env_scheduler
+    ports:
+      - "8000:8000"
     networks:
       - caddy
 
@@ -44,4 +60,21 @@ services:
       - ./caddy_config:/config
       - ./public:/srv  # Mount the public directory here
     networks:
+      - caddy
+    depends_on:
+      - mqtt5
+      - scheduler
+
+  # Telegram Bot Service
+  tg-bot:
+    container_name: tg_bot_service
+    build:
+      context: ./room_automation_telegram_bot_main
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: 
+      - .env_tg_bot
+    networks:
+      - caddy
+    depends_on:
       - caddy
