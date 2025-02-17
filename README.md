@@ -75,9 +75,9 @@ HOST=0.0.0.0
 
 Fill in the required values before proceeding.
 
-### **6. Create Docker Containers**
+### **6. Build and Start Docker Containers**
 ```sh
-sudo docker compose create
+sudo docker compose up --build -d
 ```
 
 ### **7. Set MQTT Credentials**
@@ -93,11 +93,10 @@ You will be prompted to enter and confirm the password. Once done, type:
 ```sh
 exit
 ```
-to leave the container.
 
-### **8. Start All Containers**
+### **8. Restart All Containers**
 ```sh
-sudo docker compose up -d
+sudo docker compose restart
 ```
 
 ---
@@ -140,11 +139,6 @@ sudo docker compose up -d
   ```sh
   docker-compose logs -f
   ```
-
----
-
-## **Contributors**
-- **Dhiman Paras** ([@dhimanparas20](https://github.com/dhimanparas20))
 
 ---
 
