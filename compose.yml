@@ -36,7 +36,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - .env_scheduler
+      - .env
     ports:
       - "8000:8000"
     networks:
@@ -71,7 +71,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: 
-      - .env_tg_bot
+      - .env
     networks:
       - caddy
     depends_on:
