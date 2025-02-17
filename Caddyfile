@@ -14,22 +14,27 @@ portainer.{$WEB_DOMAIN} {
     reverse_proxy portainer:9000
 }
 
+# Scheduler on HTTPS (secured connection)
+scheduler.{$WEB_DOMAIN} {
+    reverse_proxy scheduler:8000
+}
+
 # Default HTTPS configuration for mqttx-web
 mqttx.{$WEB_DOMAIN} {
-    reverse_proxy {$WEB_CONTAINER}:8080
+    reverse_proxy mqttx-web:8080
 }
 
 # WSS configuration for mqtt.mstservices.tech (WebSocket Secure)
 mqtt.{$WEB_DOMAIN} {
-    reverse_proxy {$MQTT_CONTAINER}:{$WEBSOCKET_PORT}
+    reverse_proxy mqtt5:1884
 }
 
 # WS connection on port 1884 for mqtt.mstservices.tech
-mqtt.{$WEB_DOMAIN}:{$WEBSOCKET_PORT} {
-    reverse_proxy {$MQTT_CONTAINER}:{$WEBSOCKET_PORT}
+mqtt.{$WEB_DOMAIN}:1884 {
+    reverse_proxy mqtt5:1884
 }
 
 # MQTT connection on port 1883 for mqtt.mstservices.tech
-mqtt.{$WEB_DOMAIN}:{$MQTT_PORT} {
-    reverse_proxy {$MQTT_CONTAINER}:{$MQTT_PORT}
+mqtt.{$WEB_DOMAIN}:1883 {
+    reverse_proxy mqtt5:1883
 }
