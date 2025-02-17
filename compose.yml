@@ -35,10 +35,6 @@ services:
     restart: unless-stopped
     environment:
       - WEB_DOMAIN=${WEB_DOMAIN}
-      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
-      - MQTT_PORT=${MQTT_PORT}
-      - WEB_CONTAINER=${WEB_CONTAINER}
-      - MQTT_CONTAINER=${MQTT_CONTAINER}
     ports:
       - "80:80"       # HTTP (will be redirected to HTTPS)
       - "443:443"     # HTTPS
