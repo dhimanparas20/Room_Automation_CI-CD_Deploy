@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Networks for communication between services
 networks:
   caddy:
