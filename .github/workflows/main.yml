@@ -23,14 +23,17 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
             cd ${{ secrets.WORK_DIR }} && \
+            echo "Pulling from: ${{ secrets.WORK_DIR }}" && \
             git checkout ${{ secrets.MAIN_BRANCH }} && \
             git pull && \
             
             cd "${{ secrets.TG_BOT_FOLDER }}"
+            echo "Pulling from: ${{ secrets.TG_BOT_FOLDER }}" && \
             git checkout ${{ secrets.MAIN_BRANCH }} && \
             git pull && cd .. && \
 
             cd "${{ secrets.SCHEDULER_FOLDER }}"
+            echo "Pulling from: ${{ secrets.SCHEDULER_FOLDER }}" && \
             git checkout ${{ secrets.MAIN_BRANCH }} && \
             git pull
             exit"
