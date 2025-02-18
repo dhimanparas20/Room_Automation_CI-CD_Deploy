@@ -1,5 +1,6 @@
+name: Deploy to Server
+
 on:
-  # Trigger workflow manually using the "Run workflow" button in GitHub Actions.
   workflow_dispatch:
 
 jobs:
@@ -8,38 +9,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Install SSH Keys
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Install SSH Keys
         run: |
-          # Create a new private key file with the appropriate permissions.
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          # Write the private key from GitHub Secrets into the file.
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          # Add the SSH host to the known hosts file to avoid interactive prompt.
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+          mkdir -p ~/.ssh
+          # Use printf to correctly format the private key (handle newline characters properly)
+          printf "%b" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      # Step 2: Connect to the remote server and pull the latest changes from the repository
       - name: Connect and Pull Changes
         run: |
-          ssh ubuntu@3.110.107.2 "\
-            cd ${{ secrets.WORK_DIR }} && \
-            git checkout ${{ secrets.MAIN_BRANCH }} && \
-            git pull && \
-            cd ${{ secrets.WORK_DIR }}/${{ secrets.TG_BOT_FOLDER }} && \
-            git pull && \
-            cd ${{ secrets.WORK_DIR }}/${{ secrets.SCHEDULER_FOLDER }} && \
-            git pull && \
-            exit"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd "${{ secrets.WORK_DIR }}"
+          git checkout "${{ secrets.MAIN_BRANCH }}"
+          git pull
+          cd "${{ secrets.WORK_DIR }}/${{ secrets.TG_BOT_FOLDER }}"
+          git pull
+          cd "${{ secrets.WORK_DIR }}/${{ secrets.SCHEDULER_FOLDER }}"
+          git pull
+          exit
 
-      # Step 3: Build and Run Docker Compose
       - name: Build and Run Docker Compose
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
-            cd ${{ secrets.WORK_DIR }} && \
-            sudo docker compose build && \
-            sudo docker compose up -d && \
-            docker image prune -f"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd "${{ secrets.WORK_DIR }}"
+          sudo docker compose build && sudo docker compose up -d && docker image prune -f
+          exit
 
-      # Step 4: Clean Up SSH Configuration
       - name: Cleanup SSH Configuration
         run: rm -rf ~/.ssh
