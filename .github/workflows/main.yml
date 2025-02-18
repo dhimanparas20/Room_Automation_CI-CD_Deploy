@@ -4,31 +4,44 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
-    name: Deploy and Update Services
+  run_pull:
+    name: Run Pull and Deploy
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Setup SSH Key
+      # Step 1: Install SSH Keys
+      - name: Install SSH Keys
         run: |
+          # Create the SSH directory and private key file with correct permissions.
           mkdir -p ~/.ssh
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          # Write the private key from GitHub Secrets into the file.
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          # Add the SSH host to known_hosts to avoid interactive prompt.
           ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Deploy to Server
+      # Step 2: Connect and Pull Changes in all relevant directories
+      - name: Connect and Pull Changes
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ${{ secrets.WORK_DIR }}
-          git checkout ${{ secrets.MAIN_BRANCH }}
-          git pull
-          cd ${{ secrets.WORK_DIR }}/${{ secrets.TG_BOT_FOLDER }}
-          git pull
-          cd ${{ secrets.WORK_DIR }}/${{ secrets.SCHEDULER_FOLDER }}
-          git pull
-          cd ${{ secrets.WORK_DIR }}
-          sudo docker compose build && sudo docker compose up -d && docker image prune -f
-          exit
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+            cd ${{ secrets.WORK_DIR }} && \
+            git checkout ${{ secrets.MAIN_BRANCH }} && \
+            git pull && \
+            cd ${{ secrets.WORK_DIR }}/${{ secrets.TG_BOT_FOLDER }} && \
+            git pull && \
+            cd ${{ secrets.WORK_DIR }}/${{ secrets.SCHEDULER_FOLDER }} && \
+            git pull && \
+            exit"
+
+      # Step 3: Build and Run Docker Compose, then prune unused images
+      - name: Build and Run Docker Compose
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+            cd ${{ secrets.WORK_DIR }} && \
+            sudo docker compose build && \
+            sudo docker compose up -d && \
+            docker image prune -f"
+
+      # Step 4: Cleanup SSH Configuration
+      - name: Cleanup SSH Configuration
+        run: rm -rf ~/.ssh
