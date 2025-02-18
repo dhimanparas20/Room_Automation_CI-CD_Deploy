@@ -25,6 +25,10 @@ jobs:
             cd ${{ secrets.WORK_DIR }} && \
             git checkout ${{ secrets.MAIN_BRANCH }} && \
             git pull && \
+            cd "${{ secrets.WORK_DIR }}/${{ secrets.TG_BOT_FOLDER }}"
+            git pull
+            cd "${{ secrets.WORK_DIR }}/${{ secrets.SCHEDULER_FOLDER }}"
+            git pull
             exit"
 
       # Step 3: Build and Run Docker Compose
@@ -32,9 +36,9 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
             cd ${{ secrets.WORK_DIR }} && \
-            sudo docker compose build && \
+            sudo docker compose up --build -d && \
             sudo docker compose up -d && \
-            docker image prune -f"
+            sudo docker image prune -f"
 
       # Step 4: Clean Up SSH Configuration
       - name: Cleanup SSH Configuration
