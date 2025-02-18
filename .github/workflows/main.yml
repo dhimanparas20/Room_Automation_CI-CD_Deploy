@@ -21,7 +21,7 @@ jobs:
       # Step 2: Connect to the remote server and pull the latest changes from the repository
       - name: Connect and Pull Changes
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+          ssh ubuntu@3.110.107.2 "\
             cd ${{ secrets.WORK_DIR }} && \
             git checkout ${{ secrets.MAIN_BRANCH }} && \
             git pull && \
