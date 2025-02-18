@@ -48,7 +48,7 @@ jobs:
             cd ${{ secrets.WORK_DIR }} && \
             sudo docker compose up --build -d && \
             sudo docker compose up -d && \
-            sudo docker system prune --all --volumes --force"
+            sudo docker system prune -a"
 
       # Step 4: Clean Up SSH Configuration
       - name: Cleanup SSH Configuration
