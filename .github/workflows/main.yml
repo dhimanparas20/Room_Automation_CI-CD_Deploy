@@ -9,18 +9,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Install SSH Keys
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Install SSH Keys
         run: |
-          # Create the SSH directory and private key file with correct permissions.
           mkdir -p ~/.ssh
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          # Write the private key from GitHub Secrets into the file.
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          # Add the SSH host to known_hosts to avoid interactive prompt.
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | sed 's/\\n/\
+/g' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      # Step 2: Connect and Pull Changes in all relevant directories
       - name: Connect and Pull Changes
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
@@ -33,7 +32,6 @@ jobs:
             git pull && \
             exit"
 
-      # Step 3: Build and Run Docker Compose, then prune unused images
       - name: Build and Run Docker Compose
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
@@ -42,6 +40,5 @@ jobs:
             sudo docker compose up -d && \
             docker image prune -f"
 
-      # Step 4: Cleanup SSH Configuration
       - name: Cleanup SSH Configuration
         run: rm -rf ~/.ssh
