@@ -149,5 +149,45 @@ sudo docker compose restart
 
 ---
 
+## **CI/CD with GitHub Workflows**
+
+This project supports automated deployments using GitHub Actions. The workflow is designed to automate building, testing, and deploying the application.
+
+### **Required Environment Variables**
+To enable CI/CD, configure the following environment variables in your GitHub repository settings under **Secrets and Variables**:
+
+- `SSH_PRIVATE_KEY` - The private SSH key for connecting to the deployment server.
+- `SSH_HOST` - The host address of the deployment server.
+
+- `MAIN_BRANCH` - The main branch for triggering CI/CD workflows.
+  ```sh
+  main
+  ```
+  
+- `SCHEDULER_FOLDER` - The folder where the Scheduler Website is deployed.
+  ```sh
+  Room_Automation_Scheduler
+  ```
+  
+- `TG_BOT_FOLDER` - The folder where the Telegram Bot is deployed.
+  ```sh
+  room_automation_telegram_bot_main
+  ```
+  
+- `WORK_DIR` - The working directory on the server.
+  ```sh
+  setup-mosquitto-with-docker
+  ```
+  
+- `SSH_USER` - The SSH user for executing deployment commands.
+  ```sh
+  ubuntu
+  ```
+
+
+This workflow will trigger automatically when changes are pushed to the `MAIN_BRANCH`. Ensure the required secrets are set up in your GitHub repository.
+
+---
+
 ## **License**
 This project is licensed under the MIT License.
