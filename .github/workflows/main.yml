@@ -1,6 +1,5 @@
-name: Deploy to Server
-
 on:
+  # Trigger workflow manually using the "Run workflow" button in GitHub Actions.
   workflow_dispatch:
 
 jobs:
@@ -9,20 +8,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
+      # Step 1: Install SSH Keys
       - name: Install SSH Keys
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | sed 's/\\n/\
-/g' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          # Create a new private key file with the appropriate permissions.
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          # Write the private key from GitHub Secrets into the file.
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          # Add the SSH host to the known hosts file to avoid interactive prompt.
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
+      # Step 2: Connect to the remote server and pull the latest changes from the repository
       - name: Connect and Pull Changes
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
             cd ${{ secrets.WORK_DIR }} && \
             git checkout ${{ secrets.MAIN_BRANCH }} && \
             git pull && \
@@ -32,13 +31,15 @@ jobs:
             git pull && \
             exit"
 
+      # Step 3: Build and Run Docker Compose
       - name: Build and Run Docker Compose
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
             cd ${{ secrets.WORK_DIR }} && \
             sudo docker compose build && \
             sudo docker compose up -d && \
             docker image prune -f"
 
+      # Step 4: Clean Up SSH Configuration
       - name: Cleanup SSH Configuration
         run: rm -rf ~/.ssh
