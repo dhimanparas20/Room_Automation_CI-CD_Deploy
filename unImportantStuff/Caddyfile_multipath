@@ -1,0 +1,33 @@
+# Redirect HTTP (port 80) to HTTPS (port 443)
+{$WEB_DOMAIN}:80 {
+    redir https://{host}{uri} permanent
+}
+
+# Main site configuration
+{$WEB_DOMAIN} {
+    # Reverse proxy for /mqtt
+    route /mqtt* {
+        reverse_proxy mqtt5:1884
+    }
+
+    # Reverse proxy for /scheduler
+    route /scheduler* {
+        reverse_proxy scheduler:8000
+    }
+
+    # Serve static files for all other paths
+    route /* {
+        root * /srv
+        file_server
+    }
+}
+
+# Reverse proxy for MQTT WebSocket (WS) on port 1884
+{$WEB_DOMAIN}:1884 {
+    reverse_proxy mqtt5:1884
+}
+
+# Reverse proxy for MQTT connection on port 1883
+{$WEB_DOMAIN}:1883 {
+    reverse_proxy mqtt5:1883
+}
