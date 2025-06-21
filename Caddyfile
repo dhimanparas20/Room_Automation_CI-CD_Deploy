@@ -30,7 +30,7 @@ mqtt.{$WEB_DOMAIN}:1883 {
 }
 
 # Default HTTPS configuration for mqttx-web
-mqttx.{$WEB_DOMAIN} {
+dash.{$WEB_DOMAIN} {
     reverse_proxy mqtt5:5000
 }
 
