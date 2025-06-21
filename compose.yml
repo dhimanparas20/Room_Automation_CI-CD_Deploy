@@ -14,19 +14,51 @@ volumes:
 
 services:
   # MQTT5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
-  mqtt5:
-    image: eclipse-mosquitto
+#  mqtt5:
+#    image: eclipse-mosquitto
+#    container_name: mqtt5
+#    ports:
+#      - "1883:1883"  # Default MQTT port
+#      - "1884:1884"  # WebSocket port for MQTT (WS)
+#    volumes:
+#      - ./config:/mosquitto/config:rw
+#      - ./data:/mosquitto/data:rw
+#      - ./log:/mosquitto/log:rw
+#    restart: unless-stopped
+#    networks:
+#      - caddy
+  #Replace eclipse mosquitto with emqx
+  emqx:
+    image: emqx/emqx:latest
     container_name: mqtt5
-    ports:
-      - "1883:1883"  # Default MQTT port
-      - "1884:1884"  # WebSocket port for MQTT (WS)
-    volumes:
-      - ./config:/mosquitto/config:rw
-      - ./data:/mosquitto/data:rw
-      - ./log:/mosquitto/log:rw
     restart: unless-stopped
+    env_file:
+      - .env
+    #    user: "${UID:-1000}:${GID:-1000}"   # Run as your host user for file permissions [[1]]
+    ports:
+      - "1883:1883"    # MQTT
+      - "8883:8883"    # MQTT over SSL
+      - "1884:8083"    # WebSocket
+      - "8084:8084"    # Secure WebSocket
+      - "18083:18083"  # Dashboard
+    volumes:
+      - ./data:/opt/emqx/data
+      - ./log:/opt/emqx/log
+      # - ./certs:/opt/emqx/etc/certs  # Uncomment if using custom SSL certs
     networks:
       - caddy
+    healthcheck:
+      test: [ "CMD", "/opt/emqx/bin/emqx", "ctl", "status" ]
+      interval: 10s
+      timeout: 20s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
+
 
   # Caddy server for reverse proxying and HTTPS
   caddy:
