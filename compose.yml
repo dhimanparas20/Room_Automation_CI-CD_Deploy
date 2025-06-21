@@ -20,13 +20,13 @@ services:
     restart: unless-stopped
     env_file:
       - emqx.env
-    user: "${UID:-1000}:${GID:-1000}"   # Run as your host user for file permissions [[1]]
+#    user: "${UID:-1000}:${GID:-1000}"   # Run as your host user for file permissions [[1]]
     ports:
-      - "1883:1883"    # MQTT
-      - "8883:8883"    # MQTT over SSL
-      - "1884:8083"    # WebSocket
-      - "8084:8084"    # Secure WebSocket
-      - "5000:18083"  # Dashboard
+      - "1883:1883"    # MQTT / TCP
+#      - "8883:8883"    # MQTT over SSL
+      - "1884:1884"    # WebSocket
+#      - "8084:8084"    # Secure WebSocket
+#      - "5000:18083"  # Dashboard
     volumes:
       - ./data:/opt/emqx/data
       - ./log:/opt/emqx/log
@@ -40,7 +40,7 @@ services:
       retries: 5
     security_opt:
       - no-new-privileges:true
-    read_only: true
+#    read_only: true
     tmpfs:
       - /tmp
       - /run
@@ -56,6 +56,8 @@ services:
     ports:
       - "80:80"       # HTTP (will be redirected to HTTPS)
       - "443:443"     # HTTPS
+#      - "1884:1884"
+#      - "1883:1883"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy_data:/data
