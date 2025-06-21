@@ -78,7 +78,7 @@ services:
     networks:
       - caddy
     depends_on:
-      mqtt5:
+      emqx:
         condition: service_started
 
   # Room Automation Scheduler Service
@@ -95,7 +95,7 @@ services:
     networks:
       - caddy
     depends_on:
-      mqtt5:
+      emqx:
         condition: service_started
       caddy:
         condition: service_started
@@ -112,7 +112,7 @@ services:
     networks:
       - caddy
     depends_on:
-      mqtt5:
+      emqx:
         condition: service_started
       caddy:
         condition: service_started
