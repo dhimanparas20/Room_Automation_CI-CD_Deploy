@@ -17,24 +17,20 @@ Follow these steps to install and deploy the project.
 
 ### **1. Download the Setup Installer Script**
 ```sh
-wget https://raw.githubusercontent.com/dhimanparas20/setup-mosquitto-with-docker/refs/heads/main/setup_installer.sh
+curl https://raw.githubusercontent.com/dhimanparas20/setup-mosquitto-with-docker/refs/heads/main/setup_installer.sh | sudo su
 ```
-### **2. Grant Execute Permission to the Script**
-```sh
-chmod +x setup_installer.sh
-```
-
-### **3. Run the Installer**
-```sh
-./setup_installer.sh
-```
-
-### **4. Navigate to the Project Directory**
+### **2. Navigate to the Project Directory**
 ```sh
 cd setup-mosquitto-with-docker
 ```
 
-### **5. Edit the Environment Variables**
+### **3. Rename EMQX env file**
+```sh
+cp emqx.env_sample emqx.env
+nano  emqx.env
+```
+
+### **4. Edit the Environment Variables**
 Modify the `.env` file using `nano`:
 ```sh
 nano .env
