@@ -14,6 +14,11 @@ scheduler.{$WEB_DOMAIN} {
     reverse_proxy scheduler:8000
 }
 
+# Default HTTPS configuration for mqttx-web
+dash.{$WEB_DOMAIN} {
+    reverse_proxy mqtt5:18083
+}
+
 # WSS configuration for mqtt.mstservices.tech (WebSocket Secure)
 mqtt.{$WEB_DOMAIN} {
     reverse_proxy mqtt5:1884
@@ -29,14 +34,7 @@ mqtt.{$WEB_DOMAIN}:1883 {
     reverse_proxy mqtt5:1883
 }
 
-# Default HTTPS configuration for mqttx-web
-dash.{$WEB_DOMAIN} {
-    reverse_proxy mqtt5:5000
-}
-
 # Portainer on HTTPS (secured connection)
 #portainer.{$WEB_DOMAIN} {
 #    reverse_proxy portainer:9000
 #}
-
-
