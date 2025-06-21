@@ -13,34 +13,20 @@ volumes:
     driver: local
 
 services:
-  # MQTT5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
-#  mqtt5:
-#    image: eclipse-mosquitto
-#    container_name: mqtt5
-#    ports:
-#      - "1883:1883"  # Default MQTT port
-#      - "1884:1884"  # WebSocket port for MQTT (WS)
-#    volumes:
-#      - ./config:/mosquitto/config:rw
-#      - ./data:/mosquitto/data:rw
-#      - ./log:/mosquitto/log:rw
-#    restart: unless-stopped
-#    networks:
-#      - caddy
   #Replace eclipse mosquitto with emqx
   emqx:
     image: emqx/emqx:latest
     container_name: mqtt5
     restart: unless-stopped
     env_file:
-      - .env
-    #    user: "${UID:-1000}:${GID:-1000}"   # Run as your host user for file permissions [[1]]
+      - emqx.env
+    user: "${UID:-1000}:${GID:-1000}"   # Run as your host user for file permissions [[1]]
     ports:
       - "1883:1883"    # MQTT
       - "8883:8883"    # MQTT over SSL
       - "1884:8083"    # WebSocket
       - "8084:8084"    # Secure WebSocket
-      - "18083:18083"  # Dashboard
+      - "5000:18083"  # Dashboard
     volumes:
       - ./data:/opt/emqx/data
       - ./log:/opt/emqx/log
@@ -107,7 +93,7 @@ services:
       context: ./room_automation_telegram_bot_main
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file: 
+    env_file:
       - .env
     networks:
       - caddy
@@ -116,3 +102,18 @@ services:
         condition: service_started
       caddy:
         condition: service_started
+
+  # MQTT5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
+  #  mqtt5:
+  #    image: eclipse-mosquitto
+  #    container_name: mqtt5
+  #    ports:
+  #      - "1883:1883"  # Default MQTT port
+  #      - "1884:1884"  # WebSocket port for MQTT (WS)
+  #    volumes:
+  #      - ./config:/mosquitto/config:rw
+  #      - ./data:/mosquitto/data:rw
+  #      - ./log:/mosquitto/log:rw
+  #    restart: unless-stopped
+  #    networks:
+  #      - caddy

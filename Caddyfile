@@ -29,12 +29,14 @@ mqtt.{$WEB_DOMAIN}:1883 {
     reverse_proxy mqtt5:1883
 }
 
+# Default HTTPS configuration for mqttx-web
+mqttx.{$WEB_DOMAIN} {
+    reverse_proxy mqtt5:5000
+}
+
 # Portainer on HTTPS (secured connection)
 #portainer.{$WEB_DOMAIN} {
 #    reverse_proxy portainer:9000
 #}
 
-# Default HTTPS configuration for mqttx-web
-#mqttx.{$WEB_DOMAIN} {
-#    reverse_proxy mqttx-web:8080
-#}
+
