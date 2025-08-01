@@ -1,0 +1,35 @@
+name: Deploy to Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo (optional, for context)
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e
+            echo "Pulling Main CodeBase"
+            cd ${{ secrets.WORK_DIR }} && git pull
+            echo "Pulling TG BOT..."
+            cd ${{ secrets.TG_BOT_FOLDER }} && git pull
+            cd ..
+            echo "Pulling Scheduler Code..."
+            cd ${{ secrets.SCHEDULER_FOLDER }} && git pull
+            cd ..
+            echo "Restarting Docker Compose stack..."
+            sudo docker compose down
+            sudo docker compose up --build -d
+            sudo docker image prune -f
+          EOF
