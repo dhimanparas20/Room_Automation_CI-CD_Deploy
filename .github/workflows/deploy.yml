@@ -20,12 +20,18 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
+            echo "------------------------------------------"
             echo "Pulling Main CodeBase"
+            echo "------------------------------------------"
             cd ${{ secrets.WORK_DIR }} && git pull
+            echo "------------------------------------------"
             echo "Pulling TG BOT..."
+            echo "------------------------------------------"
             cd ${{ secrets.TG_BOT_FOLDER }} && git pull
             cd ..
+            echo "------------------------------------------"
             echo "Pulling Scheduler Code..."
+            echo "------------------------------------------"
             cd ${{ secrets.SCHEDULER_FOLDER }} && git pull
             cd ..
             echo "Restarting Docker Compose stack..."
