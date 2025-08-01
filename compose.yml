@@ -23,14 +23,10 @@ services:
 #    user: "${UID:-1000}:${GID:-1000}"   # Run as your host user for file permissions [[1]]
     ports:
       - "1883:1883"    # MQTT / TCP
-#      - "8883:8883"    # MQTT over SSL
       - "1884:1884"    # WebSocket
-#      - "8084:8084"    # Secure WebSocket
-#      - "5000:18083"  # Dashboard
     volumes:
       - ./data:/opt/emqx/data
       - ./log:/opt/emqx/log
-      # - ./certs:/opt/emqx/etc/certs  # Uncomment if using custom SSL certs
     networks:
       - caddy
     healthcheck:
@@ -56,8 +52,6 @@ services:
     ports:
       - "80:80"       # HTTP (will be redirected to HTTPS)
       - "443:443"     # HTTPS
-#      - "1884:1884"
-#      - "1883:1883"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy_data:/data
@@ -78,8 +72,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    ports:
-      - "8000:8000"
+#    ports:
+#      - "8000:8000"
     networks:
       - caddy
     depends_on:
@@ -104,18 +98,3 @@ services:
         condition: service_started
       caddy:
         condition: service_started
-
-  # MQTT5 Eclipse Mosquitto service with MQTT (1883) and WebSocket (1884)
-  #  mqtt5:
-  #    image: eclipse-mosquitto
-  #    container_name: mqtt5
-  #    ports:
-  #      - "1883:1883"  # Default MQTT port
-  #      - "1884:1884"  # WebSocket port for MQTT (WS)
-  #    volumes:
-  #      - ./config:/mosquitto/config:rw
-  #      - ./data:/mosquitto/data:rw
-  #      - ./log:/mosquitto/log:rw
-  #    restart: unless-stopped
-  #    networks:
-  #      - caddy
