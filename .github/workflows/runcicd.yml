@@ -29,7 +29,7 @@ jobs:
             cd ${{ secrets.SCHEDULER_FOLDER }} && git pull
             cd ..
             echo "Restarting Docker Compose stack..."
-            sudo docker compose down
-            sudo docker compose up --build -d
-            sudo docker image prune -f
+            docker compose down
+            docker compose up --build -d
+            docker image prune -f
           EOF
