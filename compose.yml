@@ -13,14 +13,13 @@ volumes:
     driver: local
 
 services:
-  #Replace eclipse mosquitto with emqx
+  # EMQX MQTT Broker
   emqx:
     image: emqx/emqx:latest
     container_name: mqtt5
     restart: unless-stopped
     env_file:
       - emqx.env
-#    user: "${UID:-1000}:${GID:-1000}"   # Run as your host user for file permissions [[1]]
     ports:
       - "1883:1883"    # MQTT / TCP
       - "1884:1884"    # WebSocket
@@ -31,16 +30,57 @@ services:
       - caddy
     healthcheck:
       test: [ "CMD", "/opt/emqx/bin/emqx", "ctl", "status" ]
-      interval: 10s
-      timeout: 20s
-      retries: 5
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     security_opt:
       - no-new-privileges:true
-#    read_only: true
     tmpfs:
       - /tmp
       - /run
 
+  # Room Automation Scheduler Service
+  scheduler:
+    container_name: room_automation_scheduler
+    build:
+      context: ./Room_Automation_Scheduler
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - caddy
+    depends_on:
+      emqx:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 3s
+
+  # Telegram Bot Service (no HTTP port, process-based healthcheck)
+  tg-bot:
+    container_name: tg_bot_service
+    build:
+      context: ./room_automation_telegram_bot_main
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - caddy
+    depends_on:
+      emqx:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "app.py"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 3s
 
   # Caddy server for reverse proxying and HTTPS
   caddy:
@@ -61,40 +101,42 @@ services:
       - caddy
     depends_on:
       emqx:
-        condition: service_started
-
-  # Room Automation Scheduler Service
-  scheduler:
-    container_name: room_automation_scheduler
-    build:
-      context: ./Room_Automation_Scheduler
-      dockerfile: Dockerfile
+        condition: service_healthy
+      scheduler:
+        condition: service_healthy
+      tg-bot:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "80"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 3s  
+ 
+  # Lazydocker Web Service
+  lazydocker-web:
+    build: ./lazydocker-web
+    container_name: lazydocker-web
     restart: unless-stopped
-    env_file:
-      - .env
 #    ports:
-#      - "8000:8000"
+#      - "7681:7681"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./lazydocker-web/config.yml:/root/.config/lazydocker/config.yml
     networks:
       - caddy
     depends_on:
       emqx:
-        condition: service_started
+        condition: service_healthy
+      scheduler:
+        condition: service_healthy
+      tg-bot:
+        condition: service_healthy
       caddy:
-        condition: service_started
-
-  # Telegram Bot Service
-  tg-bot:
-    container_name: tg_bot_service
-    build:
-      context: ./room_automation_telegram_bot_main
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    env_file:
-      - .env
-    networks:
-      - caddy
-    depends_on:
-      emqx:
-        condition: service_started
-      caddy:
-        condition: service_started
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7681/"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 3s
