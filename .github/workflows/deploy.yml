@@ -18,7 +18,7 @@ jobs:
 
       - name: Deploy via SSH
         run: |
-          ssh -tt -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash -s << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
             echo "------------------------------------------"
             echo "Pulling Main CodeBase"
