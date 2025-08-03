@@ -15,6 +15,7 @@ cd server
 # Clone the dependent repositories inside it
 git clone https://github.com/dhimanparas20/room_automation_telegram_bot_main.git
 git clone https://github.com/dhimanparas20/Room_Automation_Scheduler.git
+git clone https://github.com/dhimanparas20/lazydocker-web.git
 
 # Create an empty .env file if it doesn't exist
 touch .env
