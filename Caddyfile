@@ -1,7 +1,7 @@
-#{
-#  acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
-#}
-
+#Comment them if running on Produciton
+{
+  acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
 
 # Redirect HTTP (port 80) to HTTPS (port 443)
 {$WEB_DOMAIN}:80 {
@@ -17,6 +17,15 @@
 # Scheduler on HTTPS (secured connection)
 scheduler.{$WEB_DOMAIN} {
     reverse_proxy scheduler:8000
+}
+
+# LazyDocker For Logs. Run below Command to generate password hash
+# sudo docker run --rm caddy:latest caddy hash-password --plaintext 'yourStrongPassword'
+logs.mstservices.tech {
+    basic_auth {
+        admin $2a$14$VzMr0deD1LOiY0ExYP6xhOAoSISmrsH.f1yX8eRWyTYebGTrr7WRC
+    }
+    reverse_proxy lazydocker-web:7681
 }
 
 # Default HTTPS configuration for mqttx-web
