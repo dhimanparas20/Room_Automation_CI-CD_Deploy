@@ -25,7 +25,7 @@ This project automates the setup of a room automation server using Docker, EMQX/
 
 0. You can also run the setup directly with a single command:
     ```bash
-    wget -O - https://raw.githubusercontent.com/dhimanparas20/Room_Automation_MAIN_CI-CD_Deploy/main/setup_installer.sh | bash
+    wget -O - https://raw.githubusercontent.com/dhimanparas20/Room_Automation_CI-CD_Deploy/refs/heads/main/setup_installer.sh | bash
     ```
 - This will download and execute the setup script, which clones all required repositories and starts the services.
 
