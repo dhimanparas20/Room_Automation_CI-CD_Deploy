@@ -100,7 +100,7 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ../room_automation_telegram_bot_main:/app
+      - ../Room_Automation_TELEGRAM_BOT:/app
     networks:
       - caddy
     depends_on:
