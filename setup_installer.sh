@@ -22,23 +22,35 @@ touch .env
 
 # --- Fix EMQX/Mosquitto Docker data directory permissions ---
 
-# Set your project directory here (now 'server')
 PROJECT_DIR=$(pwd)
 DATA_DIR="$PROJECT_DIR/data"
 
-# 1. Ensure the data directory exists
+# Ensure the data directory exists
 mkdir -p "$DATA_DIR"
 
-# 2. Set ownership to emqx user (UID 1000)
+# Set ownership to emqx user (UID 1000)
 sudo chown -R 1000:1000 "$DATA_DIR"
 
-# 3. Set permissions to 755
+# Set permissions to 755
 sudo chmod -R 755 "$DATA_DIR"
 
-# 4. Bring down any running containers
+# --- Fix EMQX/Mosquitto Docker log directory permissions ---
+
+LOG_DIR="$PROJECT_DIR/log"
+
+# Ensure the log directory exists
+mkdir -p "$LOG_DIR"
+
+# Set ownership to emqx user (UID 1000)
+sudo chown -R 1000:1000 "$LOG_DIR"
+
+# Set permissions to 755
+sudo chmod -R 755 "$LOG_DIR"
+
+# Bring down any running containers
 sudo docker compose down
 
-# 5. Bring up the EMQX service
-#sudo docker compose up -d emqx
+# Bring up the EMQX service (uncomment if you want to start it automatically)
+# sudo docker compose up -d emqx
 
-echo "✅ Setup completed successfully! EMQX data directory permissions fixed and service started!"
+echo "✅ Setup completed successfully! EMQX data and log directory permissions fixed!"
