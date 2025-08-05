@@ -94,7 +94,7 @@ services:
   tg-bot:
     container_name: tg-bot
     build:
-      context: ../room_automation_telegram_bot_main
+      context: ../Room_Automation_TELEGRAM_BOT
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
@@ -125,7 +125,7 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ../Room_Automation_Scheduler:/app
+      - ../Room_Automation_SCHEDULER:/app
     networks:
       - caddy
     depends_on:
