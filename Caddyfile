@@ -19,21 +19,21 @@ scheduler.{$WEB_DOMAIN} {
     reverse_proxy scheduler:8000
 }
 
-# LazyDocker For Logs. Run below Command to generate password hash
-# sudo docker run --rm caddy:latest caddy hash-password --plaintext 'yourStrongPassword'
-logs.mstservices.tech {
-    basic_auth {
-        admin $2a$14$VzMr0deD1LOiY0ExYP6xhOAoSISmrsH.f1yX8eRWyTYebGTrr7WRC
-    }
-    reverse_proxy lazydocker-web:7681
-}
-
 # Default HTTPS configuration for mqttx-web
 dash.{$WEB_DOMAIN} {
-    reverse_proxy mqtt5:18083
+    reverse_proxy emqx:18083
 }
 
 # WSS configuration for mqtt.mstservices.tech (WebSocket Secure)
 mqtt.{$WEB_DOMAIN} {
-    reverse_proxy mqtt5:1884
+    reverse_proxy emqx:1884
+}
+
+# LazyDocker For Logs. Run below Command to generate password hash
+# sudo docker run --rm caddy:latest caddy hash-password --plaintext 'yourStrongPassword'
+logs.{$WEB_DOMAIN} {
+    basic_auth {
+        admin $2a$14$VzMr0deD1LOiY0ExYP6xhOAoSISmrsH.f1yX8eRWyTYebGTrr7WRC
+    }
+    reverse_proxy lazydocker-web:7681
 }
