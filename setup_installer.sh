@@ -19,8 +19,8 @@ git clone https://github.com/dhimanparas20/lazydocker-web.git
 # Navigate into the main repository (setup-mosquitto-with-docker)
 cd Room_Automation_CI-CD_Deploy
 
-# Create an empty .env file if it doesn't exist
-touch .env
+# rename .env_sample to .env
+mv .env_sample .env
 
 # --- Fix EMQX/Mosquitto Docker data directory permissions ---
 
