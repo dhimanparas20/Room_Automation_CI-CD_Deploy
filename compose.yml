@@ -42,9 +42,8 @@ services:
     build: ./lazydocker-web
     container_name: lazydocker-web
     restart: unless-stopped
-#    ports:
-#      - "7681:7681"
     volumes:
+      - ./lazydocker-web:/app  # <-- Bind mount for live code reload
       - /var/run/docker.sock:/var/run/docker.sock
       - ./lazydocker-web/config.yml:/root/.config/lazydocker/config.yml
     networks:
@@ -100,6 +99,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    volumes:
+      - ./room_automation_telegram_bot_main:/app  # <-- Bind mount for live code reload
     networks:
       - caddy
     depends_on:
@@ -123,6 +124,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    volumes:
+      - ./Room_Automation_Scheduler:/app  # <-- Bind mount for live code reload
     networks:
       - caddy
     depends_on:
