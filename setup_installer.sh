@@ -6,16 +6,18 @@ set -e
 # Clear the terminal screen
 clear
 
-# Clone the main repository into 'server'
-git clone https://github.com/dhimanparas20/setup-mosquitto-with-docker.git server
-
-# Navigate to the cloned repository
+# Create 'server' directory if it doesn't exist and navigate into it
+mkdir -p server
 cd server
 
-# Clone the dependent repositories inside it
+# Clone all required repositories inside 'server'
+git clone https://github.com/dhimanparas20/setup-mosquitto-with-docker.git
 git clone https://github.com/dhimanparas20/room_automation_telegram_bot_main.git
 git clone https://github.com/dhimanparas20/Room_Automation_Scheduler.git
 git clone https://github.com/dhimanparas20/lazydocker-web.git
+
+# Navigate into the main repository (setup-mosquitto-with-docker)
+cd setup-mosquitto-with-docker
 
 # Create an empty .env file if it doesn't exist
 touch .env
@@ -47,10 +49,4 @@ sudo chown -R 1000:1000 "$LOG_DIR"
 # Set permissions to 755
 sudo chmod -R 755 "$LOG_DIR"
 
-# Bring down any running containers
-sudo docker compose down
-
-# Bring up the EMQX service (uncomment if you want to start it automatically)
-# sudo docker compose up -d emqx
-
-echo "✅ Setup completed successfully! EMQX data and log directory permissions fixed!"
+echo "✅ Setup completed successfully!"
