@@ -11,13 +11,13 @@ mkdir -p server
 cd server
 
 # Clone all required repositories inside 'server'
-git clone https://github.com/dhimanparas20/setup-mosquitto-with-docker.git
-git clone https://github.com/dhimanparas20/room_automation_telegram_bot_main.git
-git clone https://github.com/dhimanparas20/Room_Automation_Scheduler.git
+git clone https://github.com/dhimanparas20/Room_Automation_CI-CD_Deploy.git
+git clone https://github.com/dhimanparas20/Room_Automation_TELEGRAM_BOT.git
+git clone https://github.com/dhimanparas20/Room_Automation_SCHEDULER.git
 git clone https://github.com/dhimanparas20/lazydocker-web.git
 
 # Navigate into the main repository (setup-mosquitto-with-docker)
-cd setup-mosquitto-with-docker
+cd Room_Automation_CI-CD_Deploy
 
 # Create an empty .env file if it doesn't exist
 touch .env
