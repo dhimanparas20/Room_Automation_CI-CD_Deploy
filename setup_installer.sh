@@ -47,8 +47,8 @@ echo "Bringing down any running Docker Compose containers..."
 sudo docker compose down
 
 echo "---------------------------------------------------------"
-echo "Building and starting Docker Compose services..."
-sudo docker compose up --build -d
+echo "Building  Docker Compose services..."
+sudo docker compose build
 
 echo "---------------------------------------------------------"
 echo "Pruning unused Docker networks, images, and volumes..."
