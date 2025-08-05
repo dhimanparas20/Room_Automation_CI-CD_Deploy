@@ -5,3 +5,6 @@ log
 data
 caddy_data
 caddy_config
+room_automation_telegram_bot_main
+Room_Automation_Scheduler
+lazydocker-web
