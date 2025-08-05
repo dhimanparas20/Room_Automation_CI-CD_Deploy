@@ -3,50 +3,60 @@
 # Exit immediately if any command fails
 set -e
 
-# Clear the terminal screen
+echo "---------------------------------------------------------"
+echo "Clearing the terminal screen..."
 clear
 
-# Create 'server' directory if it doesn't exist and navigate into it
+echo "---------------------------------------------------------"
+echo "Creating 'server' directory if it doesn't exist and navigating into it..."
 mkdir -p server
 cd server
 
-# Clone all required repositories inside 'server'
+echo "---------------------------------------------------------"
+echo "Cloning all required repositories inside 'server'..."
 git clone https://github.com/dhimanparas20/Room_Automation_CI-CD_Deploy.git
 git clone https://github.com/dhimanparas20/Room_Automation_TELEGRAM_BOT.git
 git clone https://github.com/dhimanparas20/Room_Automation_SCHEDULER.git
 git clone https://github.com/dhimanparas20/lazydocker-web.git
 
-# Navigate into the main repository (setup-mosquitto-with-docker)
+echo "---------------------------------------------------------"
+echo "Navigating into the main repository (Room_Automation_CI-CD_Deploy)..."
 cd Room_Automation_CI-CD_Deploy
 
-# rename .env_sample to .env
+echo "---------------------------------------------------------"
+echo "Renaming .env_sample to .env..."
 mv .env_sample .env
 
-# --- Fix EMQX/Mosquitto Docker data directory permissions ---
-
+echo "---------------------------------------------------------"
+echo "Setting up EMQX/Mosquitto Docker data directory permissions..."
 PROJECT_DIR=$(pwd)
 DATA_DIR="$PROJECT_DIR/data"
-
-# Ensure the data directory exists
 mkdir -p "$DATA_DIR"
-
-# Set ownership to emqx user (UID 1000)
 sudo chown -R 1000:1000 "$DATA_DIR"
-
-# Set permissions to 755
 sudo chmod -R 755 "$DATA_DIR"
 
-# --- Fix EMQX/Mosquitto Docker log directory permissions ---
-
+echo "---------------------------------------------------------"
+echo "Setting up EMQX/Mosquitto Docker log directory permissions..."
 LOG_DIR="$PROJECT_DIR/log"
-
-# Ensure the log directory exists
 mkdir -p "$LOG_DIR"
-
-# Set ownership to emqx user (UID 1000)
 sudo chown -R 1000:1000 "$LOG_DIR"
-
-# Set permissions to 755
 sudo chmod -R 755 "$LOG_DIR"
 
+echo "---------------------------------------------------------"
+echo "Bringing down any running Docker Compose containers..."
+sudo docker compose down
+
+echo "---------------------------------------------------------"
+echo "Building and starting Docker Compose services..."
+sudo docker compose up --build -d
+
+echo "---------------------------------------------------------"
+echo "Pruning unused Docker networks, images, and volumes..."
+sudo docker system prune -af --volumes
+
 echo "✅ Setup completed successfully!"
+
+echo "---------------------------------------------------------"
+echo "Script will exit in 2 seconds..."
+sleep 2
+exit 0
