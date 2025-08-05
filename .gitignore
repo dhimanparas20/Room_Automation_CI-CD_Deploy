@@ -1,3 +1,7 @@
 .idea
 .venv
 .env
+log
+data
+caddy_data
+caddy_config
