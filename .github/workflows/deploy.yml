@@ -20,22 +20,33 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
-            echo "------------------------------------------"
-            echo "Pulling Main CodeBase"
-            echo "------------------------------------------"
-            cd ${{ secrets.WORK_DIR }} && git pull
-            echo "------------------------------------------"
-            echo "Pulling TG BOT..."
-            echo "------------------------------------------"
-            cd ${{ secrets.TG_BOT_FOLDER }} && git pull
-            cd ..
-            echo "------------------------------------------"
-            echo "Pulling Scheduler Code..."
-            echo "------------------------------------------"
-            cd ${{ secrets.SCHEDULER_FOLDER }} && git pull
-            cd ..
+            echo "\n\n------------------------------------------"
+            echo "Entering Project Folder"
+            cd ${{ secrets.WORK_DIR }} && ls
+          
+            echo "\n\n------------------------------------------"
+            echo "Pulling TG_BOT_FOLDER"
+            cd ${{ secrets.TG_BOT_FOLDER }} && git pull && cd ..
+            
+            echo "\n\n------------------------------------------"
+            echo "Pulling SCHEDULER_FOLDER"
+            cd ${{ secrets.SCHEDULER_FOLDER }} && git pull && cd ..
+            
+            echo "\n\n------------------------------------------"
+            echo "Pulling LAZYDOCKER_FOLDER"
+            cd ${{ secrets.LAZYDOCKER_FOLDER }} && git pull && cd ..
+          
+            echo "\n\n------------------------------------------"
+            echo "Entering Main CICD Folder"
+            cd ${{ secrets.CI_CD_FOLDER }} && git pull
+          
+            echo "\n\n------------------------------------------"
             echo "Restarting Docker Compose stack..."
             sudo docker compose down
             sudo docker compose up --build -d
             sudo docker image prune -f
+          
+            echo "\n\n------------------------------------------"
+            echo "    SCRIP SUCCEEDED  SUCCESSFULLY :-)     "
+            echo "------------------------------------------"
           EOF

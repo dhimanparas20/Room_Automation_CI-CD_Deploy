@@ -9,12 +9,6 @@ This project automates the setup of a room automation server using Docker, EMQX/
 - Scheduling functionality for automated tasks.
 - Easy deployment using Docker and Bash scripts.
 
-## Repositories Used
-
-- [setup-mosquitto-with-docker](https://github.com/dhimanparas20/setup-mosquitto-with-docker): Sets up the MQTT broker.
-- [room_automation_telegram_bot_main](https://github.com/dhimanparas20/room_automation_telegram_bot_main): Telegram bot for user interaction.
-- [Room_Automation_Scheduler](https://github.com/dhimanparas20/Room_Automation_Scheduler): Handles task scheduling.
-
 ## Prerequisites
 
 - **Docker & Docker Compose**: Ensure Docker is installed and running.
@@ -23,68 +17,33 @@ This project automates the setup of a room automation server using Docker, EMQX/
 
 ## Setup Instructions
 
-0. You can also run the setup directly with a single command:
-    ```bash
-    wget -O - https://raw.githubusercontent.com/dhimanparas20/Room_Automation_CI-CD_Deploy/refs/heads/main/setup_installer.sh | bash
-    ```
-- This will download and execute the setup script, which clones all required repositories and starts the services.
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/dhimanparas20/Room_Automation_MAIN_CI-CD_Deploy.git
-   cd Room_Automation_MAIN_CI-CD_Deploy
-   ```
-
-2. Run the setup script:
-   ```bash
-   bash setup_installer.sh
-   ```
-
-3. The script will:
-   - Clone all required repositories.
-   - Set up Docker data directory permissions.
-   - Start the EMQX service.
-
-4. Verify the setup:
-   - Check if the EMQX service is running:
-     ```bash
-     sudo docker ps
-     ```
-   - Ensure the `.env` file is created and populated with necessary variables.
-
-## Environment Variables
-
-- The `.env` file is created during setup. Add the following variables as needed:
-  - `TELEGRAM_BOT_TOKEN`: Token for the Telegram bot.
-  - `SCHEDULER_CONFIG`: Configuration for the scheduler.
-  - `MQTT_BROKER_URL`: URL of the MQTT broker.
-
-## Troubleshooting
-
-- **Docker Issues**:
-  - Ensure Docker is installed and running.
-  - Run the script with `sudo` if permission errors occur.
-- **Service Not Starting**:
-  - Check Docker logs for errors:
-    ```bash
-    sudo docker logs <container_id>
-    ```
-- **Permission Errors**:
-  - Ensure the `data` directory has correct ownership and permissions:
-    ```bash
-    sudo chown -R 1000:1000 data
-    sudo chmod -R 755 data
-    ```
-
-## Project Structure
-
+You can run the setup directly with a single command:
+```bash
+wget -O - https://raw.githubusercontent.com/dhimanparas20/Room_Automation_CI-CD_Deploy/refs/heads/main/setup_installer.sh | bash
 ```
-Room_Automation_MAIN_CI-CD_Deploy/
-├── setup_installer.sh   # Main setup script
-├── server/              # Cloned Mosquitto repository
-├── data/                # Data directory for EMQX
-└── .env                 # Environment variables file
-```
+After running the above script, the code will deploy and run automatically. All is set—no further manual steps are required.
+
+---
+
+## GitHub CI/CD Environment Variables
+
+For CI/CD pipeline configuration, set the following environment variables in your GitHub repository:
+
+| Variable           | Description                        | Default/Example Value                |
+|--------------------|------------------------------------|--------------------------------------|
+| `MAIN_BRANCH`      | Main branch name                   | `main` (default)                     |
+| `SSH_HOST`         | Server IP address                  | *(your server IP)*                   |
+| `SSH_USER`         | SSH username                       | `ubuntu` (default)                   |
+| `SSH_PRIVATE_KEY`  | SSH private key                    | *(your private key)*                 |
+| `CI_CD_FOLDER`     | CI/CD deployment folder            | `Room_Automation_CI-CD_Deploy`       |
+| `LAZYDOCKER_FOLDER`| Lazydocker web folder              | `lazydocker-web`                     |
+| `SCHEDULER_FOLDER` | Scheduler folder                   | `Room_Automation_SCHEDULER`          |
+| `TG_BOT_FOLDER`    | Telegram bot folder                | `Room_Automation_TELEGRAM_BOT`       |
+| `WORK_DIR`         | Working directory on server        | `server` (default)                   |
+
+**That’s it—nothing else is needed.**
+
+---
 
 ## License
 
@@ -96,3 +55,7 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 ## Contact
 For any questions or support, please contact [dhimanparas20](https://github.com/dhimanparas20).
+
+---
+
+Let me know if you want this as a file or need further tweaks!
