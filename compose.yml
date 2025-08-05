@@ -119,7 +119,7 @@ services:
   scheduler:
     container_name: scheduler
     build:
-      context: ../Room_Automation_Scheduler
+      context: ../Room_Automation_SCHEDULER
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
