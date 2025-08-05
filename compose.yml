@@ -21,13 +21,13 @@ services:
     environment:
       - WEB_DOMAIN=${WEB_DOMAIN}
     ports:
-      - "80:80"       # HTTP (will be redirected to HTTPS)
-      - "443:443"     # HTTPS
+      - "80:80"
+      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy_data:/data
       - ./caddy_config:/config
-      - ./public:/srv  # Mount the public directory here
+      - ./public:/srv
     networks:
       - caddy
     healthcheck:
@@ -39,13 +39,13 @@ services:
 
   # Lazydocker Web Service
   lazydocker-web:
-    build: ./lazydocker-web
+    build: ../lazydocker-web
     container_name: lazydocker-web
     restart: unless-stopped
     volumes:
-      - ./lazydocker-web:/app  # <-- Bind mount for live code reload
+      - ../lazydocker-web:/app
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./lazydocker-web/config.yml:/root/.config/lazydocker/config.yml
+      - ../lazydocker-web/config.yml:/root/.config/lazydocker/config.yml
     networks:
       - caddy
     depends_on:
@@ -61,13 +61,13 @@ services:
   # EMQX MQTT Broker
   emqx:
     image: emqx/emqx:latest
-    container_name: mqtt5
+    container_name: emqx
     restart: unless-stopped
     env_file:
       - emqx.env
     ports:
-      - "1883:1883"    # MQTT / TCP
-      - "1884:1884"    # WebSocket
+      - "1883:1883"
+      - "1884:1884"
     volumes:
       - ./data:/opt/emqx/data
       - ./log:/opt/emqx/log
@@ -90,17 +90,17 @@ services:
       - /tmp
       - /run
 
-  # Telegram Bot Service (no HTTP port, process-based healthcheck)
+  # Telegram Bot Service
   tg-bot:
-    container_name: tg_bot_service
+    container_name: tg-bot
     build:
-      context: ./room_automation_telegram_bot_main
+      context: ../room_automation_telegram_bot_main
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - .env
+      - ../.env
     volumes:
-      - ./room_automation_telegram_bot_main:/app  # <-- Bind mount for live code reload
+      - ../room_automation_telegram_bot_main:/app
     networks:
       - caddy
     depends_on:
@@ -117,15 +117,15 @@ services:
 
   # Room Automation Scheduler Service
   scheduler:
-    container_name: room_automation_scheduler
+    container_name: scheduler
     build:
-      context: ./Room_Automation_Scheduler
+      context: ../Room_Automation_Scheduler
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - .env
+      - ../.env
     volumes:
-      - ./Room_Automation_Scheduler:/app  # <-- Bind mount for live code reload
+      - ../Room_Automation_Scheduler:/app
     networks:
       - caddy
     depends_on:
