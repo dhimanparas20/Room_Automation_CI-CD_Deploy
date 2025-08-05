@@ -98,7 +98,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ../.env
+      - ./.env
     volumes:
       - ../room_automation_telegram_bot_main:/app
     networks:
@@ -123,7 +123,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ../.env
+      - ./.env
     volumes:
       - ../Room_Automation_Scheduler:/app
     networks:
